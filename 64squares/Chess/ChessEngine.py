@@ -17,4 +17,4 @@ class GameState():
 
         self.whiteToMove = True
         self.moveLog = []
-        pass
+    
