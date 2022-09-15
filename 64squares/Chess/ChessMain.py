@@ -23,6 +23,9 @@ def main():
     clock = p.time.Clock()
     screen.fill(p.Color("white"))
     gs = GameState()
+    ValidMoves = gs.GetValidMoves()
+    MoveMade = False # blank variable that flags when a move is made
+
     print(gs.board)
     LoadImages()
     running = True
@@ -46,9 +49,27 @@ def main():
                 if len(playerClicks) ==2: #after 2nd click
                     move = Move(playerClicks[0], playerClicks[1], gs.board)
                     print(move.GetChessNotation())
-                    gs.MakeMove(move)
+
+                    if move in ValidMoves:
+                        gs.MakeMove(move)
+                        MoveMade = True
+
                     sqSelected = () # reset player clicks
                     playerClicks = []
+
+                # key shortcuts
+            elif e.type == p.KEYDOWN:
+                if e.key == p.K_z: # undo a move if 'z' is pressed
+                    gs.UndoMove()
+                    MoveMade = True
+
+                if e.key ==p.K_e:
+                    running = False # press 'e' to quit game
+                    p.quit()    
+
+        if MoveMade:
+            ValidMoves = gs.GetValidMoves()
+            MoveMade = False
 
         DrawGameState(screen, gs)
         clock.tick(MAX_FPS)
