@@ -109,8 +109,20 @@ class GameState():
         """
         Get all the rook moves for the rook located at r,c and add the moves to list
         """
-        pass
-
+        """if self.whiteToMove: # white rook moves
+            if self.board[r-1][c] == "--": # 1 square pawn advance
+                moves.append(Move((r, c), (r-1, c), self.board))
+                if r == 6 and self.board[r-2][c] == "--": # 2 square pawn advance
+                    moves.append(Move((r, c), (r-2, c), self.board))
+            # captures to the left
+            if c - 1 >= 0: # because we dont want column -1
+                if self.board[r-1][c-1][0] == 'b': # enemy pice to capture
+                   moves.append(Move((r, c), (r-1, c-1), self.board))
+            # captures to the right
+            if c + 1 <= 7:
+                if self.board[r-1][c+1][0] == 'b':
+                    moves.append(Move((r, c),(r-1, c+1), self.board))
+"""
     def GetQueenMoves(self,r,c,moves):
         """
         Get all the queen moves for the queen located at r,c and add the moves to list
