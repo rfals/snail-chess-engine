@@ -97,37 +97,80 @@ class GameState():
         """
         Get all the knight moves for the knight located at r,c and add the moves to list
         """
-        pass
+        knightMoves = ((-2, -1), (-2, 1), (-1, -2), (-1, 2), (1, -2), (1, 2), (2, -1),(2, 1))  # directions: up/left up/right right/up right/down down/left down/right left/up left/down
+        ally_color = 'w' if self.whiteToMove else 'b'
+        for m in knightMoves:
+            EndRow = r + m[0]
+            EndCol = c + m[1]
+            if 0 <= EndRow <= 7 and 0 <= EndCol <= 7: # check for possible moves
+                EndPiece = self.board[EndRow][EndCol]
+                if EndPiece[0] != ally_color:
+                    moves.append(Move((r, c), (EndRow, EndCol), self.board))
 
     def GetBishopMoves(self,r,c,moves):
         """
         Get all the bishop moves for the bishop located at r,c and add the moves to list
         """
-        pass
-
-    def GetRookMoves(self,r,c,moves):
-        """
-        Get all the rook moves for the rook located at r,c and add the moves to list
-        """
-        directions = ((-1,0), (0,-1), (1,0), (0,1))
+        directions = ((-1,-1), (-1,1), (1,1), (1,-1)) # directions: diagonals
         enemy_color = 'b' if self.whiteToMove else 'w'
         for direction in directions:
             for i in range(1, 8):
                 EndRow = r + direction[0] * i
                 EndCol = c + direction[1] * i
-                if 0 <= end_row <= 7 and 0 <= end
+                if 0 <= EndRow <= 7 and 0 <= EndCol <= 7: # check for possible moves
+                    EndPiece = self.board[EndRow][EndCol]
+                    if EndPiece == "--": # if empty space, then we can move the bishop there
+                        moves.append(Move((r, c), (EndRow, EndCol), self.board))
+                    elif EndPiece[0] == enemy_color: # enemy piece valid
+                        moves.append(Move((r, c), (EndRow, EndCol), self.board))
+                        break
+                    else: # same color piece invalid
+                        break
+                else: # off board
+                    break
+
+    def GetRookMoves(self,r,c,moves):
+        """
+        Get all the rook moves for the rook located at r,c and add the moves to list
+        """
+        directions = ((-1,0), (0,-1), (1,0), (0,1)) # directions: up,left,down,right
+        enemy_color = 'b' if self.whiteToMove else 'w'
+        for direction in directions:
+            for i in range(1, 8):
+                EndRow = r + direction[0] * i
+                EndCol = c + direction[1] * i
+                if 0 <= EndRow <= 7 and 0 <= EndCol <= 7: # check for possible moves
+                    EndPiece = self.board[EndRow][EndCol]
+                    if EndPiece == "--": # if empty space, then we can move the rook there
+                        moves.append(Move((r, c), (EndRow, EndCol), self.board))
+                    elif EndPiece[0] == enemy_color: # enemy piece valid
+                        moves.append(Move((r, c), (EndRow, EndCol), self.board))
+                        break
+                    else: # same color piece invalid
+                        break
+                else: # off board
+                    break
 
     def GetQueenMoves(self,r,c,moves):
         """
         Get all the queen moves for the queen located at r,c and add the moves to list
         """
-        pass
+        self.GetRookMoves(r,c,moves)
+        self.GetBishopMoves(r,c,moves)
 
-    def GetKingMoves(self,r,c,moves):
+    def GetKingMoves(self, r, c, moves):
         """
-        Get all the king moves for the king located at r,c and add the moves to list
+        Get all the king moves for the king located at row col and add the moves to the list.
         """
-        pass
+        directions = ((-1,-1), (-1,0), (-1,1), (0,-1), (0,1), (1,-1), (1,0), (1,1))
+        ally_color = "w" if self.whiteToMove else "b"
+        for i in range(8):
+            EndRow = r + directions[i][0]
+            EndCol = c + directions[i][1]
+            if 0 <= EndRow <= 7 and 0 <= EndCol <= 7:
+                EndPiece = self.board[EndRow][EndCol]
+                if EndPiece[0] != ally_color: # not an ally piece or an empty piece
+                    moves.append(Move((r,c), (EndRow, EndCol), self.board))
 
 class Move():
 

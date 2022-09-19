@@ -54,8 +54,10 @@ def main():
                         gs.MakeMove(move)
                         MoveMade = True
 
-                    sqSelected = () # reset player clicks
-                    playerClicks = []
+                        sqSelected = () # reset player clicks
+                        playerClicks = []
+                    else:
+                        playerClicks = [sqSelected]
 
                 # key shortcuts
             elif e.type == p.KEYDOWN:
