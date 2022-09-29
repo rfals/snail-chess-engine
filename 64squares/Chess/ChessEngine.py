@@ -40,6 +40,8 @@ class GameState():
             self.board[move.EndRow][move.EndCol] = move.PieceCaptured
             self.whiteToMove = not self.whiteToMove # switch back turns
 
+    def squareUnderAttack(self, r, c):
+        pass
 
     def GetValidMoves(self):
         """
@@ -172,6 +174,28 @@ class GameState():
                 if EndPiece[0] != ally_color: # not an ally piece or an empty piece
                     moves.append(Move((r,c), (EndRow, EndCol), self.board))
 
+    """def getCastleMoves(self, r, c, moves):
+    
+       # Generate all valid castle moves for the king at (row, col) and add them to the list of moves.
+        
+        if self.squareUnderAttack(r, c):
+            return  # can't castle while in check
+        if (self.whiteToMove and self.xxx.wks) or (
+                not self.whiteToMove and self.xxx.bks):
+            self.getKingsideCastleMoves(r, c, moves)
+        if (self.whiteToMove and self.xxx.wqs) or (
+                not self.whiteToMove and self.xxx.bqs):
+            self.getQueensideCastleMoves(r, c, moves)
+
+    def getKingsideCastleMoves(self, r, c, moves):
+        if self.board[r][c + 1] == '--' and self.board[r][c + 2] == '--':
+            if not self.squareUnderAttack(r, c + 1) and not self.squareUnderAttack(r, c + 2):
+                moves.append(Move((r, c), (r, c + 2), self.board, is_castle_move=True))
+
+    def getQueensideCastleMoves(self, r, c, moves):
+        if self.board[r][c - 1] == '--' and self.board[r][c - 2] == '--' and self.board[r][c - 3] == '--':
+            if not self.squareUnderAttack(r, c - 1) and not self.squareUnderAttack(r, c - 2):
+                moves.append(Move((r, c), (r, c - 2), self.board, is_castle_move=True))"""
 class Move():
 
     # Dictionaries that map keys to values to have a proper chess notation
