@@ -2,9 +2,6 @@
 Class responsible for storing info and determining legal moves.
 """
 
-
-
-
 class GameState():
     def __init__(self) -> None:
         self.board = [
@@ -22,6 +19,10 @@ class GameState():
 
         self.whiteToMove = True
         self.moveLog = []
+        self.WhiteKingLocation = (7, 4)
+        self.BlackKingLocation = (0, 4)
+        self.CheckMate = False
+        self.StaleMate = False
 
     def MakeMove(self, move):
         """
@@ -32,6 +33,12 @@ class GameState():
         self.moveLog.append(move) # store the move
         self.whiteToMove = not self.whiteToMove # swap turns
 
+        # Update Kings Location
+        if move.PieceMoved == "wK":
+            self.WhiteKingLocation = (move.EndRow, move.EndCol)
+        elif move.PieceMoved == "bK":
+            self.BlackKingLocation = (move.EndRow, move.EndCol)
+
 
     def UndoMove(self):
         if len(self.moveLog) != 0: # can only undo if a move is made
@@ -40,14 +47,67 @@ class GameState():
             self.board[move.EndRow][move.EndCol] = move.PieceCaptured
             self.whiteToMove = not self.whiteToMove # switch back turns
 
-    def squareUnderAttack(self, r, c):
-        pass
+            # Update Kings Location
+            if move.PieceMoved == "wK":
+                self.WhiteKingLocation = (move.StartRow, move.StartCol)
+            elif move.PieceMoved == "bK":
+                self.BlackKingLocation = (move.StartRow, move.StartCol)
 
     def GetValidMoves(self):
         """
         All moves besides checks
         """
-        return self.GetPossibleMoves()
+        # 1) Generate all possible moves
+        moves = self.GetPossibleMoves()
+
+        # 2) for each move, make the move
+        for i in range(len(moves) -1, -1, -1): # when removing from a list go backward so the indexes dont shift
+            self.MakeMove(moves[i])
+
+        # 3) generate all opponent's moves
+        # 4) for each opponents moves see if they attack your king
+            self.whiteToMove = not self.whiteToMove # switch turns so InCheck works
+            if self.InCheck():
+                moves.remove(moves[i])
+        # 5) if they do attack your king, not a valid move
+            self.whiteToMove = not self.whiteToMove
+            self.UndoMove()
+        
+        if len(moves) == 0: # either checkmate or stalemate
+            if self.InCheck():
+                self.CheckMate = True
+            else:
+                self.StaleMate = True
+        else:
+            self.CheckMate = False
+            self.StaleMate = False
+
+
+        return moves
+
+    def InCheck(self):
+        """
+        Determines if the player is in check
+        """
+        if self.whiteToMove:
+            return self.SquareUnderAttack(self.WhiteKingLocation[0], self.WhiteKingLocation[1])
+        else:
+            return self.SquareUnderAttack(self.BlackKingLocation[0], self.BlackKingLocation[1])
+
+    def SquareUnderAttack(self, r, c):
+        """
+        Determins if the enemy can attack the square at r,c
+        """
+        self.whiteToMove = not self.whiteToMove # switch to opponents POV
+        OppMoves = self.GetPossibleMoves()
+        self.whiteToMove = not self.whiteToMove # switch back turns
+        for move in OppMoves:
+            if move.EndRow == r and move.EndCol == c: # square is under attack
+                return True
+        return False
+
+
+
 
     def GetPossibleMoves(self):
         """
@@ -174,28 +234,7 @@ class GameState():
                 if EndPiece[0] != ally_color: # not an ally piece or an empty piece
                     moves.append(Move((r,c), (EndRow, EndCol), self.board))
 
-    """def getCastleMoves(self, r, c, moves):
-    
-       # Generate all valid castle moves for the king at (row, col) and add them to the list of moves.
-        
-        if self.squareUnderAttack(r, c):
-            return  # can't castle while in check
-        if (self.whiteToMove and self.xxx.wks) or (
-                not self.whiteToMove and self.xxx.bks):
-            self.getKingsideCastleMoves(r, c, moves)
-        if (self.whiteToMove and self.xxx.wqs) or (
-                not self.whiteToMove and self.xxx.bqs):
-            self.getQueensideCastleMoves(r, c, moves)
 
-    def getKingsideCastleMoves(self, r, c, moves):
-        if self.board[r][c + 1] == '--' and self.board[r][c + 2] == '--':
-            if not self.squareUnderAttack(r, c + 1) and not self.squareUnderAttack(r, c + 2):
-                moves.append(Move((r, c), (r, c + 2), self.board, is_castle_move=True))
-
-    def getQueensideCastleMoves(self, r, c, moves):
-        if self.board[r][c - 1] == '--' and self.board[r][c - 2] == '--' and self.board[r][c - 3] == '--':
-            if not self.squareUnderAttack(r, c - 1) and not self.squareUnderAttack(r, c - 2):
-                moves.append(Move((r, c), (r, c - 2), self.board, is_castle_move=True))"""
 class Move():
 
     # Dictionaries that map keys to values to have a proper chess notation
