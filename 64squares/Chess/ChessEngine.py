@@ -47,9 +47,9 @@ class GameState():
             self.board[move.EndRow][move.EndCol] = move.PieceMoved[0] + 'Q'
 
 
-        # En Passant
+        # Capture the pawn on en passant move
         if move.isEnPassantMove:
-            self.board[move.StartRow][move.EndCol] = "--" # capture the pawn
+            self.board[move.StartRow][move.EndCol] = '--'
 
         # Update En Passant Possible variable
         if move.PieceMoved[1] == 'P' and abs(move.StartRow - move.EndRow) == 2: # only on 2 square pawn advance

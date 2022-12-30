@@ -51,7 +51,7 @@ def main():
                     print(move.GetChessNotation())
                     for i in range(len(ValidMoves)):
                         if move == ValidMoves[i]:
-                            gs.MakeMove(move)
+                            gs.MakeMove(ValidMoves[i])
                             MoveMade = True
 
                             sqSelected = () # reset player clicks
