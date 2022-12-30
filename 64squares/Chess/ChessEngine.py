@@ -1,8 +1,10 @@
-"""
-Class responsible for storing info and determining legal moves.
-"""
+
 
 class GameState():
+    """
+    Class responsible for storing info and determining legal moves.
+    """
+
     def __init__(self) -> None:
         self.board = [
             ["bR", "bN", "bB", "bQ", "bK", "bB", "bN", "bR"], # Backrank black pieces
@@ -38,6 +40,10 @@ class GameState():
             self.WhiteKingLocation = (move.EndRow, move.EndCol)
         elif move.PieceMoved == "bK":
             self.BlackKingLocation = (move.EndRow, move.EndCol)
+
+        # Pawn Promotion
+        if move.isPawnPromotion:
+            self.board[move.EndRow][move.EndCol] = move.PieceMoved[0] + 'Q'
 
 
     def UndoMove(self):
@@ -257,6 +263,9 @@ class Move():
         self.EndCol = EndSq[1]
         self.PieceMoved = board[self.StartRow][self.StartCol]
         self.PieceCaptured = board[self.EndRow][self.EndCol]
+        self.isPawnPromotion = False
+        if (self.PieceMoved == "wP" and self.EndRow == 0) or (self.PieceMoved == "bP" and self.EndRow == 7):
+            self.isPawnPromotion = True
         self.moveID = self.StartRow * 1000 + self.StartCol * 100 + self.EndRow* 10 + self.EndCol # same as having a hash function that outputs 4 digits
         #print(self.moveID)
 

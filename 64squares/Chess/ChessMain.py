@@ -49,14 +49,14 @@ def main():
                 if len(playerClicks) ==2: #after 2nd click
                     move = Move(playerClicks[0], playerClicks[1], gs.board)
                     print(move.GetChessNotation())
+                    for i in range(len(ValidMoves)):
+                        if move == ValidMoves[i]:
+                            gs.MakeMove(move)
+                            MoveMade = True
 
-                    if move in ValidMoves:
-                        gs.MakeMove(move)
-                        MoveMade = True
-
-                        sqSelected = () # reset player clicks
-                        playerClicks = []
-                    else:
+                            sqSelected = () # reset player clicks
+                            playerClicks = []
+                    if not MoveMade:
                         playerClicks = [sqSelected]
 
                 # key shortcuts
