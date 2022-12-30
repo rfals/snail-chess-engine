@@ -25,6 +25,7 @@ class GameState():
         self.BlackKingLocation = (0, 4)
         self.CheckMate = False
         self.StaleMate = False
+        self.EnPassantPossible = () # coordinates for the square where en-passant is possible
 
     def MakeMove(self, move):
         """
@@ -46,6 +47,17 @@ class GameState():
             self.board[move.EndRow][move.EndCol] = move.PieceMoved[0] + 'Q'
 
 
+        # En Passant
+        if move.isEnPassantMove:
+            self.board[move.StartRow][move.EndCol] = "--" # capture the pawn
+
+        # Update En Passant Possible variable
+        if move.PieceMoved[1] == 'P' and abs(move.StartRow - move.EndRow) == 2: # only on 2 square pawn advance
+            self.EnPassantPossible = ((move.StartRow + move.EndRow) // 2, move.StartCol)
+        else:
+            self.EnPassantPossible = ()
+
+
     def UndoMove(self):
         if len(self.moveLog) != 0: # can only undo if a move is made
             move = self.moveLog.pop()
@@ -59,7 +71,19 @@ class GameState():
             elif move.PieceMoved == "bK":
                 self.BlackKingLocation = (move.StartRow, move.StartCol)
 
+            # Undo En Passant
+            if move.isEnPassantMove:
+                self.board[move.EndRow][move.EndCol] = "--" # leave landing square blank
+                self.board[move.StartRow][move.EndCol] = move.PieceCaptured
+                self.EnPassantPossible = (move.EndRow, move.EndCol)
+            
+            # Undo 2 square pawn advance
+            if move.PieceMoved[1] == 'P' and abs(move.StartRow - move.EndRow) == 2:
+                self.EnPassantPossible = ()
+
+
     def GetValidMoves(self):
+        tempEnPassantPossible = self.EnPassantPossible
         """
         All moves besides checks
         """
@@ -88,7 +112,7 @@ class GameState():
             self.CheckMate = False
             self.StaleMate = False
 
-
+        self.EnPassantPossible = tempEnPassantPossible
         return moves
 
     def InCheck(self):
@@ -142,10 +166,14 @@ class GameState():
             if c - 1 >= 0: # because we dont want column -1
                 if self.board[r-1][c-1][0] == 'b': # enemy pice to capture
                    moves.append(Move((r, c), (r-1, c-1), self.board))
+                elif (r-1, c-1) == self.EnPassantPossible:
+                    moves.append(Move((r, c), (r-1, c-1), self.board, isEnPassantMove = True))
             # captures to the right
             if c + 1 <= 7:
                 if self.board[r-1][c+1][0] == 'b':
                     moves.append(Move((r, c),(r-1, c+1), self.board))
+                elif (r-1, c+1) == self.EnPassantPossible:
+                    moves.append(Move((r, c), (r-1, c+1), self.board, isEnPassantMove = True))
         
         else: # black pawn moves
             if self.board[r+1][c] == "--": # 1 square pawn advance
@@ -156,10 +184,14 @@ class GameState():
             if c - 1 >= 0: # because we dont want column -1
                 if self.board[r+1][c-1][0] == 'w': # enemy pice to capture
                    moves.append(Move((r, c), (r+1, c-1), self.board))
+                elif (r+1, c-1) == self.EnPassantPossible:
+                    moves.append(Move((r, c), (r+1, c-1), self.board, isEnPassantMove = True))
             # captures to the right
             if c + 1 <= 7:
                 if self.board[r+1][c+1][0] == 'w':
                     moves.append(Move((r, c),(r+1, c+1), self.board))
+                elif (r+1, c+1) == self.EnPassantPossible:
+                    moves.append(Move((r, c), (r+1, c+1), self.board, isEnPassantMove = True))
 
     def GetNightMoves(self,r,c,moves):
         """
@@ -256,16 +288,21 @@ class Move():
     ColsToFiles = {v: k for k, v in FilesToCols.items()}
 
 
-    def __init__(self, StartSq, EndSq, board) -> None:
+    def __init__(self, StartSq, EndSq, board, isEnPassantMove = False) -> None:
         self.StartRow = StartSq[0]
         self.StartCol = StartSq[1]
         self.EndRow = EndSq[0]
         self.EndCol = EndSq[1]
         self.PieceMoved = board[self.StartRow][self.StartCol]
         self.PieceCaptured = board[self.EndRow][self.EndCol]
-        self.isPawnPromotion = False
-        if (self.PieceMoved == "wP" and self.EndRow == 0) or (self.PieceMoved == "bP" and self.EndRow == 7):
-            self.isPawnPromotion = True
+        
+        # Pawn promotion
+        self.isPawnPromotion = (self.PieceMoved == "wP" and self.EndRow == 0) or (self.PieceMoved == "bP" and self.EndRow == 7)
+        # En passant
+        self.isEnPassantMove = isEnPassantMove
+        if self.isEnPassantMove:
+            self.PieceCaptured = "wP" if self.PieceMoved == "bP" else "bP"
+
         self.moveID = self.StartRow * 1000 + self.StartCol * 100 + self.EndRow* 10 + self.EndCol # same as having a hash function that outputs 4 digits
         #print(self.moveID)
 
