@@ -115,6 +115,17 @@ class GameState():
         '''
         Update the castle rights given the move
         '''
+        if move.PieceCaptured == 'wR':
+            if move.EndCol == 0:
+                self.CurrentCastlingRight.wqs = False
+            elif move.EndCol == 7:
+                self.CurrentCastlingRight.wks = False
+        elif move.PieceCaptured == 'bR':
+            if move.EndCol == 0:
+                self.CurrentCastlingRight.bqs = False
+            elif move.EndCol == 7:
+                self.CurrentCastlingRight.bks = False
+
         if move.PieceMoved == 'wK':
             self.CurrentCastlingRight.wks = False
             self.CurrentCastlingRight.wqs = False
@@ -338,9 +349,9 @@ class GameState():
         """
         if self.SquareUnderAttack(r,c):
             return
-        if (self.whiteToMove and self.currentCastlingRight.wks) or (not self.whiteToMove and self.currentCastlingRight.bks):
+        if (self.whiteToMove and self.CurrentCastlingRight.wks) or (not self.whiteToMove and self.CurrentCastlingRight.bks):
             self.GetKingSideCastleMoves(r, c, moves)
-        if (self.whiteToMove and self.currentCastlingRight.wqs) or (not self.whiteToMove and self.currentCastlingRight.bqs):
+        if (self.whiteToMove and self.CurrentCastlingRight.wqs) or (not self.whiteToMove and self.CurrentCastlingRight.bqs):
             self.GetQueenSideCastleMoves(r, c, moves)
 
     def GetKingSideCastleMoves(self, r, c, moves):
