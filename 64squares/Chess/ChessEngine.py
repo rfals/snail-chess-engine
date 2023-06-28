@@ -100,7 +100,8 @@ class GameState():
 
             # Undo Castling Rights
             self.CastleRightsLog.pop() # get rid of the new castle rights from the move we are undoing
-            self.CurrentCastlingRight = self.CastleRightsLog[-1] # set the current castle rights to the last one in the list
+            newRights = self.CastleRightsLog[-1]
+            self.CurrentCastlingRight = CastleRights(newRights.wks, newRights.bks, newRights.wqs, newRights.bqs) # set the current castle rights to the last one in the list
 
             # Undo Castling Move
             if move.isCastleMove:
@@ -115,17 +116,6 @@ class GameState():
         '''
         Update the castle rights given the move
         '''
-        if move.PieceCaptured == 'wR':
-            if move.EndCol == 0:
-                self.CurrentCastlingRight.wqs = False
-            elif move.EndCol == 7:
-                self.CurrentCastlingRight.wks = False
-        elif move.PieceCaptured == 'bR':
-            if move.EndCol == 0:
-                self.CurrentCastlingRight.bqs = False
-            elif move.EndCol == 7:
-                self.CurrentCastlingRight.bks = False
-
         if move.PieceMoved == 'wK':
             self.CurrentCastlingRight.wks = False
             self.CurrentCastlingRight.wqs = False
@@ -147,11 +137,13 @@ class GameState():
 
 
     def GetValidMoves(self):
-        tempEnPassantPossible = self.EnPassantPossible
-        tempCastleRights = CastleRights(self.CurrentCastlingRight.wks, self.CurrentCastlingRight.bks, self.CurrentCastlingRight.wqs, self.CurrentCastlingRight.bqs)
         """
         All moves besides checks
         """
+        tempEnPassantPossible = self.EnPassantPossible
+        
+        tempCastleRights = CastleRights(self.CurrentCastlingRight.wks, self.CurrentCastlingRight.bks, self.CurrentCastlingRight.wqs, self.CurrentCastlingRight.bqs)
+
         # 1) Generate all possible moves
         moves = self.GetPossibleMoves()
         if self.whiteToMove:
@@ -358,8 +350,8 @@ class GameState():
         """
         Get all the king side castle moves for the king located at row, col and add it to the list
         """
-        if self.board[r][c+1] == "--" and self.board[r][c+2] == "--":
-            if not self.SquareUnderAttack(r, c+1) and not self.SquareUnderAttack(r, c+2):
+        if self.board[r][c+1] == "--" and self.board[r][c+2] == "--": #BUG: list index out of range
+            if not self.SquareUnderAttack(r, c + 1) and not self.SquareUnderAttack(r, c+2):
                 moves.append(Move((r, c), (r, c+2), self.board, isCastleMove=True))
 
     def GetQueenSideCastleMoves(self, r, c, moves):
@@ -372,10 +364,10 @@ class GameState():
 
 
 class CastleRights():
-    def __init__(self, wks, wqs, bks, bqs):
+    def __init__(self, wks, bks, wqs, bqs):
         self.wks = wks
-        self.wqs = wqs
         self.bks = bks
+        self.wqs = wqs
         self.bqs = bqs
 
 
