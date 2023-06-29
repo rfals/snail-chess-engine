@@ -73,16 +73,35 @@ def main():
             ValidMoves = gs.GetValidMoves()
             MoveMade = False
 
-        DrawGameState(screen, gs)
+        DrawGameState(screen, gs, ValidMoves, sqSelected)
         clock.tick(MAX_FPS)
         p.display.flip()
 
-def DrawGameState(screen, gs):
+def highlightSquares(screen, gs, ValidMoves, sqSelected):
+    '''
+    Responsible for all graphics within the current game state
+    '''
+    if sqSelected != ():
+        r, c = sqSelected
+        if gs.board[r][c][0] == ('w' if gs.whiteToMove else 'b'): # sqSelected is a piece that can be moved
+            # highlight selected square
+            s = p.Surface((SQ_SIZE, SQ_SIZE))
+            s.set_alpha(100) # transparency value -> 0 transparent, 255 opaque
+            s.fill(p.Color('blue'))
+            screen.blit(s, (c*SQ_SIZE, r*SQ_SIZE))
+            # highlight moves from that square
+            s.fill(p.Color('green'))
+            for move in ValidMoves:
+                if move.StartRow == r and move.StartCol == c:
+                    screen.blit(s, (move.EndCol*SQ_SIZE, move.EndRow*SQ_SIZE))
+
+
+def DrawGameState(screen, gs, ValidMoves, sqSelected):
     """
     Draws all graphics
     """
     DrawBoard(screen) # draws squares
-    #TODO: draw legal moves
+    highlightSquares(screen, gs, ValidMoves, sqSelected)
     DrawPieces(screen, gs.board)
 
 def DrawBoard(screen):
