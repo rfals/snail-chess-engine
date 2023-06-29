@@ -5,7 +5,7 @@ pieceScore = {"K": 0, "Q": 9, "R": 5, "B": 3, "N": 3, "P": 1}
 
 CHECKMATE = 1000
 STALEMATE = 0
-DEPTH = 2
+DEPTH = 3
 
 
 def findRandomMove(validMoves):
@@ -57,11 +57,13 @@ def findBestMove(gs, validMoves):
     '''
     Helper method to find the first recursive call
     '''
-    global nextMove
+    global nextMove, counter
     nextMove = None
     random.shuffle(validMoves)
     # findMoveMinMax(gs, validMoves, DEPTH, gs.whiteToMove)
-    findMoveNegaMax(gs, validMoves, DEPTH, 1 if gs.whiteToMove else -1)
+    counter = 0
+    findMoveNegaMaxAlphaBeta(gs, validMoves, DEPTH, -CHECKMATE, CHECKMATE, 1 if gs.whiteToMove else -1)
+    print(counter)
     return nextMove
 
 def findMoveMinMax(gs, validMoves, depth, whiteToMove):
@@ -102,7 +104,8 @@ def findMoveNegaMax(gs, validMoves, depth, turnMultiplier):
     '''
     Recursive function to find the best move using negamax algorithm
     '''
-    global nextMove
+    global nextMove, counter
+    counter += 1
     if depth == 0:
         return turnMultiplier * scoreBoard(gs)
     
@@ -116,6 +119,33 @@ def findMoveNegaMax(gs, validMoves, depth, turnMultiplier):
             if depth == DEPTH:
                 nextMove = move
         gs.UndoMove()
+    return maxScore
+
+def findMoveNegaMaxAlphaBeta(gs, validMoves, depth, alpha, beta, turnMultiplier):
+    '''
+    Recursive function to find the best move using negamax algorithm
+    '''
+    global nextMove, counter
+    counter += 1
+    if depth == 0:
+        return turnMultiplier * scoreBoard(gs)
+    
+
+    # move ordering - implement later
+    maxScore = -CHECKMATE
+    for move in validMoves:
+        gs.MakeMove(move)
+        nextMoves = gs.GetValidMoves()
+        score = -findMoveNegaMaxAlphaBeta(gs, nextMoves, depth-1, -beta, -alpha, -turnMultiplier)
+        if score > maxScore:
+            maxScore = score
+            if depth == DEPTH:
+                nextMove = move
+        gs.UndoMove()
+        if maxScore > alpha: #prune
+            alpha = maxScore
+        if alpha >= beta:
+            break
     return maxScore
            
 
