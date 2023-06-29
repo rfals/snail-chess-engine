@@ -35,7 +35,7 @@ def main():
     gameOver = False
 
     # human player or AI
-    playerOne = False # if human is playing white, then this will be True, else False
+    playerOne = True # if human is playing white, then this will be True, else False
     playerTwo = False # same as above but for black
 
     while running:
@@ -91,7 +91,7 @@ def main():
 
         # AI move finder logic
         if not gameOver and not humanTurn:
-            AIMove = SnailEngine.findBestMove(gs, ValidMoves)
+            AIMove = SnailEngine.findBestMoveMinMax(gs, ValidMoves)
             if AIMove is None:
                 AIMove = SnailEngine.findRandomMove(ValidMoves)
             gs.MakeMove(AIMove)
