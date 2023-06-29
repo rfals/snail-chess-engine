@@ -105,13 +105,19 @@ class GameState():
 
             # Undo Castling Move
             if move.isCastleMove:
+                # Kingside
                 if move.EndCol - move.StartCol == 2:
                     self.board[move.EndRow][move.EndCol+1] = self.board[move.EndRow][move.EndCol-1]
                     self.board[move.EndRow][move.EndCol-1] = '--'
+                # Queenside
                 else:
                     self.board[move.EndRow][move.EndCol-2] = self.board[move.EndRow][move.EndCol+1]
                     self.board[move.EndRow][move.EndCol+1] = '--'
-      
+
+            # Bug fix: need to update CheckMate and StaleMate as well after undoing a move       
+            self.CheckMate = False;
+            self.StaleMate = False;
+
     def UpdateCastleRights(self, move):
         '''
         Update the castle rights given the move

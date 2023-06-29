@@ -23,21 +23,29 @@ def findBestMove(gs, validMoves):
     opponentMinMaxScore = CHECKMATE
     bestPlayerMove = None
     random.shuffle(validMoves)
+
     for playerMove in validMoves:
         gs.MakeMove(playerMove)
         opponentsMoves = gs.GetValidMoves()
-        opponentsMaxScore = -CHECKMATE
-        for opponentsMove in opponentsMoves:
-            gs.MakeMove(opponentsMove)
-            if gs.CheckMate:
-                score = - turnMultiplier * CHECKMATE
-            elif gs.StaleMate:
-                score = STALEMATE
-            else:
-                score = - turnMultiplier * scoreMaterial(gs.board)
-            if score > opponentsMaxScore:
-                opponentsMaxScore = score
-            gs.UndoMove()
+        # if the opponent is in checkmate or stalemate, the game is over, no need to go further
+        if gs.StaleMate:
+            opponentsMaxScore = STALEMATE
+        elif gs.CheckMate:
+            opponentsMaxScore = -CHECKMATE
+        else:
+            opponentsMaxScore = -CHECKMATE
+            for opponentsMove in opponentsMoves:
+                gs.MakeMove(opponentsMove)
+                gs.GetValidMoves() # introduces inefficiency, but is necessary to check for checkmate and stalemate TODO: look for other solutions
+                if gs.CheckMate:
+                    score = CHECKMATE
+                elif gs.StaleMate:
+                    score = STALEMATE
+                else:
+                    score = - turnMultiplier * scoreMaterial(gs.board)
+                if score > opponentsMaxScore:
+                    opponentsMaxScore = score
+                gs.UndoMove()
         if opponentsMaxScore < opponentMinMaxScore:
             opponentMinMaxScore = opponentsMaxScore
             bestPlayerMove = playerMove
