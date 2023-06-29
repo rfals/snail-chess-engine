@@ -1,6 +1,7 @@
 import pygame as p
 from ChessEngine import GameState
 from ChessEngine import Move
+import SnailEngine
 
 WIDTH = HEIGHT = 512
 DIMENSION = 8
@@ -32,13 +33,16 @@ def main():
     sqSelected = () # stores last click of the player
     playerClicks = [] # keeps track of player clicks 
     gameOver = False
+    playerOne = True # if human is playing white, then this will be True, else False
+    playerTwo = False # same as above but for black
     while running:
+        humanTurn = (gs.whiteToMove and playerOne) or (not gs.whiteToMove and playerTwo)
         for e in p.event.get():
             if e.type == p.QUIT:
                 running = False
 
             elif e.type == p.MOUSEBUTTONDOWN:
-                if not gameOver:
+                if not gameOver and humanTurn:
                     location = p.mouse.get_pos() # location of the mouse
                     col = location[0]//SQ_SIZE
                     row = location[1]//SQ_SIZE
@@ -81,6 +85,13 @@ def main():
                 if e.key ==p.K_e:
                     running = False # press 'e' to quit game
                     p.quit()    
+
+        # AI move finder logic
+        if not gameOver and not humanTurn:
+            AIMove = SnailEngine.findRandomMove(ValidMoves)
+            gs.MakeMove(AIMove)
+            MoveMade = True
+            animate = True
 
         if MoveMade:
             if animate:
