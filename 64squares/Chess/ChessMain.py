@@ -25,7 +25,7 @@ def main():
     gs = GameState()
     ValidMoves = gs.GetValidMoves()
     MoveMade = False # blank variable that flags when a move is made
-
+    animate = False # flag variable for when we should animate a move
     print(gs.board)
     LoadImages()
     running = True
@@ -53,6 +53,7 @@ def main():
                         if move == ValidMoves[i]:
                             gs.MakeMove(ValidMoves[i])
                             MoveMade = True
+                            animate = True
 
                             sqSelected = () # reset player clicks
                             playerClicks = []
@@ -64,14 +65,18 @@ def main():
                 if e.key == p.K_z: # undo a move if 'z' is pressed
                     gs.UndoMove()
                     MoveMade = True
+                    animate = False
 
                 if e.key ==p.K_e:
                     running = False # press 'e' to quit game
                     p.quit()    
 
         if MoveMade:
+            if animate:
+                animateMove(gs.moveLog[-1], screen, gs.board, clock)
             ValidMoves = gs.GetValidMoves()
             MoveMade = False
+            animate = False
 
         DrawGameState(screen, gs, ValidMoves, sqSelected)
         clock.tick(MAX_FPS)
@@ -81,6 +86,7 @@ def highlightSquares(screen, gs, ValidMoves, sqSelected):
     '''
     Responsible for all graphics within the current game state
     '''
+    # TODO: highlight last move
     if sqSelected != ():
         r, c = sqSelected
         if gs.board[r][c][0] == ('w' if gs.whiteToMove else 'b'): # sqSelected is a piece that can be moved
@@ -105,6 +111,7 @@ def DrawGameState(screen, gs, ValidMoves, sqSelected):
     DrawPieces(screen, gs.board)
 
 def DrawBoard(screen):
+    global colors
     colors = [p.Color("white"), p.Color("gray")]
     for r in range(DIMENSION):
         for c in range(DIMENSION):
@@ -118,7 +125,31 @@ def DrawPieces(screen, board):
             if piece != "--": 
                 screen.blit(IMAGES[piece], p.Rect(c*SQ_SIZE, r*SQ_SIZE, SQ_SIZE, SQ_SIZE))
 
-
+def animateMove(move, screen, board, clock):
+    '''
+    Move Animations
+    '''
+    global colors
+    coords = [] # list of coordinates that the animation will move through
+    dR = move.EndRow - move.StartRow
+    dC = move.EndCol - move.StartCol
+    framesPerSquare = 8 # frames to move one square
+    frameCount = (abs(dR) + abs(dC)) * framesPerSquare
+    for frame in range(frameCount + 1):
+        r, c = (move.StartRow + dR*frame/frameCount, move.StartCol + dC*frame/frameCount)
+        DrawBoard(screen)
+        DrawPieces(screen, board)
+        # erase the piece moved from its ending square
+        color = colors[(move.EndRow + move.EndCol)%2]
+        endSquare = p.Rect(move.EndCol*SQ_SIZE, move.EndRow*SQ_SIZE, SQ_SIZE, SQ_SIZE)
+        p.draw.rect(screen, color, endSquare)
+        # draw captured piece onto rectangle
+        if move.PieceCaptured != '--':
+            screen.blit(IMAGES[move.PieceCaptured], endSquare)
+        # draw moving piece
+        screen.blit(IMAGES[move.PieceMoved], p.Rect(c*SQ_SIZE, r*SQ_SIZE, SQ_SIZE, SQ_SIZE))
+        p.display.flip()
+        clock.tick(60)
 
 if __name__ == "__main__":
     main()
