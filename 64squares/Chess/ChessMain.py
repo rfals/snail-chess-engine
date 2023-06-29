@@ -68,6 +68,7 @@ def main():
                     gs.UndoMove()
                     MoveMade = True
                     animate = False
+                    gameOver = False
                 if e.key == p.K_r: # reset the game if 'r' is pressed
                     gs = GameState() # re-initialize the game state to reset the game
                     ValidMoves = gs.GetValidMoves()
@@ -75,6 +76,7 @@ def main():
                     playerClicks = []
                     MoveMade = False
                     animate = False
+                    gameOver = False
 
                 if e.key ==p.K_e:
                     running = False # press 'e' to quit game
