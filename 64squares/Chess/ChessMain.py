@@ -33,8 +33,11 @@ def main():
     sqSelected = () # stores last click of the player
     playerClicks = [] # keeps track of player clicks 
     gameOver = False
+
+    # human player or AI
     playerOne = True # if human is playing white, then this will be True, else False
     playerTwo = False # same as above but for black
+
     while running:
         humanTurn = (gs.whiteToMove and playerOne) or (not gs.whiteToMove and playerTwo)
         for e in p.event.get():
@@ -88,8 +91,10 @@ def main():
 
         # AI move finder logic
         if not gameOver and not humanTurn:
-            AIMove = SnailEngine.findRandomMove(ValidMoves)
-            gs.MakeMove(AIMove)
+            AIMove = SnailEngine.findBestMove(gs, ValidMoves)
+            if AIMove is None:
+                AIMove = SnailEngine.findRandomMove(ValidMoves)
+            gs.MakeMove(AIMove, False)
             MoveMade = True
             animate = True
 
