@@ -31,34 +31,36 @@ def main():
     running = True
     sqSelected = () # stores last click of the player
     playerClicks = [] # keeps track of player clicks 
+    gameOver = False
     while running:
         for e in p.event.get():
             if e.type == p.QUIT:
                 running = False
 
             elif e.type == p.MOUSEBUTTONDOWN:
-                location = p.mouse.get_pos() # location of the mouse
-                col = location[0]//SQ_SIZE
-                row = location[1]//SQ_SIZE
-                if sqSelected ==(row, col): # player clicked the same square
-                    sqSelected = () # deselect
-                    playerClicks = [] # clear player clicks
-                else:
-                    sqSelected = (row, col)
-                    playerClicks.append(sqSelected) # append for both 1st and 2nd clicks
-                if len(playerClicks) ==2: #after 2nd click
-                    move = Move(playerClicks[0], playerClicks[1], gs.board)
-                    print(move.GetChessNotation())
-                    for i in range(len(ValidMoves)):
-                        if move == ValidMoves[i]:
-                            gs.MakeMove(ValidMoves[i])
-                            MoveMade = True
-                            animate = True
+                if not gameOver:
+                    location = p.mouse.get_pos() # location of the mouse
+                    col = location[0]//SQ_SIZE
+                    row = location[1]//SQ_SIZE
+                    if sqSelected ==(row, col): # player clicked the same square
+                        sqSelected = () # deselect
+                        playerClicks = [] # clear player clicks
+                    else:
+                        sqSelected = (row, col)
+                        playerClicks.append(sqSelected) # append for both 1st and 2nd clicks
+                    if len(playerClicks) ==2: #after 2nd click
+                        move = Move(playerClicks[0], playerClicks[1], gs.board)
+                        print(move.GetChessNotation())
+                        for i in range(len(ValidMoves)):
+                            if move == ValidMoves[i]:
+                                gs.MakeMove(ValidMoves[i])
+                                MoveMade = True
+                                animate = True
 
-                            sqSelected = () # reset player clicks
-                            playerClicks = []
-                    if not MoveMade:
-                        playerClicks = [sqSelected]
+                                sqSelected = () # reset player clicks
+                                playerClicks = []
+                        if not MoveMade:
+                            playerClicks = [sqSelected]
 
                 # key shortcuts
             elif e.type == p.KEYDOWN:
@@ -86,6 +88,17 @@ def main():
             animate = False
 
         DrawGameState(screen, gs, ValidMoves, sqSelected)
+
+        if gs.CheckMate:
+            gameOver = True
+            if gs.whiteToMove:
+                drawText(screen, 'Black wins by checkmate')
+            else:
+                drawText(screen, 'White wins by checkmate')
+        elif gs.StaleMate:
+            gameOver = True
+            drawText(screen, 'Stalemate')
+        
         clock.tick(MAX_FPS)
         p.display.flip()
 
@@ -157,6 +170,14 @@ def animateMove(move, screen, board, clock):
         screen.blit(IMAGES[move.PieceMoved], p.Rect(c*SQ_SIZE, r*SQ_SIZE, SQ_SIZE, SQ_SIZE))
         p.display.flip()
         clock.tick(60)
+
+def drawText(screen, text):
+    font = p.font.SysFont("Helvetica", 34, True, False)
+    textObject = font.render(text, 0, p.Color('Black'))
+    textLocation = p.Rect(0, 0, WIDTH, HEIGHT).move(WIDTH/2 - textObject.get_width()/2, HEIGHT/2 - textObject.get_height()/2)
+    screen.blit(textObject, textLocation)
+    textObject = font.render(text, 0, p.Color('Gray'))
+    screen.blit(textObject, textLocation.move(2, 2))
 
 if __name__ == "__main__":
     main()
