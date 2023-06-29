@@ -91,7 +91,7 @@ def main():
 
         # AI move finder logic
         if not gameOver and not humanTurn:
-            AIMove = SnailEngine.findBestMoveMinMax(gs, ValidMoves)
+            AIMove = SnailEngine.findBestMove(gs, ValidMoves)
             if AIMove is None:
                 AIMove = SnailEngine.findRandomMove(ValidMoves)
             gs.MakeMove(AIMove)

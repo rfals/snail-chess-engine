@@ -15,7 +15,7 @@ def findRandomMove(validMoves):
     return validMoves[random.randint(0, len(validMoves)-1)]
 
 
-def findBestMove(gs, validMoves):
+def findGreedyMove(gs, validMoves):
     '''
     Finds the best move based on material only
     '''
@@ -53,13 +53,15 @@ def findBestMove(gs, validMoves):
         gs.UndoMove()
     return bestPlayerMove
 
-def findBestMoveMinMax(gs, validMoves):
+def findBestMove(gs, validMoves):
     '''
     Helper method to find the first recursive call
     '''
     global nextMove
     nextMove = None
-    findMoveMinMax(gs, validMoves, DEPTH, gs.whiteToMove)
+    random.shuffle(validMoves)
+    # findMoveMinMax(gs, validMoves, DEPTH, gs.whiteToMove)
+    findMoveNegaMax(gs, validMoves, DEPTH, 1 if gs.whiteToMove else -1)
     return nextMove
 
 def findMoveMinMax(gs, validMoves, depth, whiteToMove):
@@ -96,7 +98,25 @@ def findMoveMinMax(gs, validMoves, depth, whiteToMove):
             gs.UndoMove()
         return minScore
 
+def findMoveNegaMax(gs, validMoves, depth, turnMultiplier):
+    '''
+    Recursive function to find the best move using negamax algorithm
+    '''
+    global nextMove
+    if depth == 0:
+        return turnMultiplier * scoreBoard(gs)
     
+    maxScore = -CHECKMATE
+    for move in validMoves:
+        gs.MakeMove(move)
+        nextMoves = gs.GetValidMoves()
+        score = -findMoveNegaMax(gs, nextMoves, depth-1, -turnMultiplier)
+        if score > maxScore:
+            maxScore = score
+            if depth == DEPTH:
+                nextMove = move
+        gs.UndoMove()
+    return maxScore
            
 
 
