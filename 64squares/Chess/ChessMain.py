@@ -36,7 +36,7 @@ def main():
 
     # human player or AI
     playerOne = True # if human is playing white, then this will be True, else False
-    playerTwo = False # same as above but for black
+    playerTwo = True # same as above but for black
 
     while running:
         humanTurn = (gs.whiteToMove and playerOne) or (not gs.whiteToMove and playerTwo)

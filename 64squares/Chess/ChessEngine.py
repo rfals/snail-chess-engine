@@ -141,6 +141,20 @@ class GameState():
                 elif move.StartCol == 7:
                     self.CurrentCastlingRight.bks = False
 
+        # If a rook is captured
+        if move.PieceCaptured == 'wR':
+            if move.EndRow == 7:
+                if move.EndCol == 0:
+                    self.CurrentCastlingRight.wqs = False
+                elif move.EndCol == 7:
+                    self.CurrentCastlingRight.wks = False
+        elif move.PieceCaptured == 'bR':
+            if move.EndRow == 0:
+                if move.EndCol == 0:
+                    self.CurrentCastlingRight.bqs = False
+                elif move.EndCol == 7:
+                    self.CurrentCastlingRight.bks = False
+
 
     def GetValidMoves(self):
         """
