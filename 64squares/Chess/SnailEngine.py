@@ -1,12 +1,67 @@
 import random
 
+CHECKMATE = 1000
+STALEMATE = 0
+DEPTH = 2
 
 pieceScore = {"K": 0, "Q": 9, "R": 5, "B": 3, "N": 3, "P": 1}
 
-CHECKMATE = 1000
-STALEMATE = 0
-DEPTH = 3
+whitePawnScores = [[0,  0,  0,  0,  0,  0,  0,  0],
+                   [5, 10, 10,-20,-20, 10, 10,  5],
+                   [5, -5,-10,  0,  0,-10, -5,  5],
+                   [0,  0,  0, 20, 20,  0,  0,  0],
+                   [5,  5, 10, 25, 25, 10,  5,  5],
+                   [10, 10, 20, 30, 30, 20, 10, 10],
+                   [50, 50, 50, 50, 50, 50, 50, 50],
+                   [0,  0,  0,  0,  0,  0,  0,  0]]
 
+blackPawnScores = [[0,  0,  0,  0,  0,  0,  0,  0],
+                   [50, 50, 50, 50, 50, 50, 50, 50],
+                   [10, 10, 20, 30, 30, 20, 10, 10],
+                   [5,  5, 10, 25, 25, 10,  5,  5],
+                   [0,  0,  0, 20, 20,  0,  0,  0],
+                   [5, -5,-10,  0,  0,-10, -5,  5],
+                   [5, 10, 10,-20,-20, 10, 10,  5],
+                   [0,  0,  0,  0,  0,  0,  0,  0]]
+
+knightScores = [[1, 1, 1, 1, 1, 1, 1, 1],
+                [1, 2, 2, 2, 2, 2, 2, 1],
+                [1, 2, 3, 3, 3, 3, 2, 1],
+                [1, 2, 3, 4, 4, 3, 2, 1],
+                [1, 2, 3, 4, 4, 3, 2, 1],
+                [1, 2, 3, 3, 3, 3, 2, 1],
+                [1, 2, 2, 2, 2, 2, 2, 1],
+                [1, 1, 1, 1, 1, 1, 1, 1]]
+
+bishopScores = [[4, 3, 2, 1, 1, 2, 3, 4],
+                [3, 4, 3, 2, 2, 3, 4, 3],
+                [2, 3, 4, 3, 3, 4, 3, 2],
+                [1, 2, 3, 4, 4, 3, 2, 1],
+                [1, 2, 3, 4, 4, 3, 2, 1],
+                [2, 3, 4, 3, 3, 4, 3, 2],
+                [3, 4, 3, 2, 2, 3, 4, 3],
+                [4, 3, 2, 1, 1, 2, 3, 4]]
+
+rookScores = [[4, 3, 4, 4, 4, 4, 3, 4],
+              [4, 4, 4, 4, 4, 4, 4, 4],
+              [1, 1, 2, 3, 3, 2, 1, 1],
+              [1, 2, 3, 4, 4, 3, 2, 1],
+              [1, 2, 3, 4, 4, 3, 2, 1],
+              [1, 1, 2, 3, 3, 2, 1, 1],
+              [4, 4, 4, 4, 4, 4, 4, 4],
+              [4, 3, 4, 4, 4, 4, 3, 4]]
+
+queenScores = [[4, 3, 2, 1, 1, 2, 3, 4],
+               [3, 4, 3, 2, 2, 3, 4, 3],
+               [2, 3, 4, 3, 3, 4, 3, 2],
+               [1, 2, 3, 4, 4, 3, 2, 1],
+               [1, 2, 3, 4, 4, 3, 2, 1],
+               [2, 3, 4, 3, 3, 4, 3, 2],
+               [3, 4, 3, 2, 2, 3, 4, 3],
+               [4, 3, 2, 1, 1, 2, 3, 4]]
+
+
+piecePositionScores = {"N": knightScores, "B": bishopScores, "Q": queenScores, "R": rookScores, "wP": whitePawnScores, "bP": blackPawnScores}
 
 def findRandomMove(validMoves):
     '''
@@ -141,6 +196,7 @@ def findMoveNegaMaxAlphaBeta(gs, validMoves, depth, alpha, beta, turnMultiplier)
             maxScore = score
             if depth == DEPTH:
                 nextMove = move
+                print(move, score)
         gs.UndoMove()
         if maxScore > alpha: #prune
             alpha = maxScore
@@ -163,12 +219,23 @@ def scoreBoard(gs):
         return STALEMATE
 
     score = 0
-    for row in gs.board:
-        for square in row:
-            if square[0] == "w":
-                score += pieceScore[square[1]]
-            elif square[0] == "b":
-                score -= pieceScore[square[1]]
+    for r in range(len(gs.board)):
+        for c in range(len(gs.board[r])):
+            square = gs.board[r][c]
+            if square != "--":
+                # score the piece based on its position
+                piecePositionScore = 0
+                if square[1] != "K": # don't score king positions
+                    if square[1] == "P": # score pawns differently
+                        piecePositionScore = piecePositionScores[square][r][c]
+                    else:
+                        piecePositionScore = piecePositionScores[square[1]][r][c]
+
+
+                if square[0] == "w":
+                    score += pieceScore[square[1]] + piecePositionScore * 0.1
+                elif square[0] == "b":
+                    score -= pieceScore[square[1]] + piecePositionScore * 0.1
 
     return score
 
