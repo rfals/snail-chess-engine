@@ -418,10 +418,15 @@ class Move():
         
         # Pawn promotion
         self.isPawnPromotion = (self.PieceMoved == "wP" and self.EndRow == 0) or (self.PieceMoved == "bP" and self.EndRow == 7)
+
         # En passant
         self.isEnPassantMove = isEnPassantMove
-        if self.isEnPassantMove:
+        if isEnPassantMove:
             self.PieceCaptured = "wP" if self.PieceMoved == "bP" else "bP"
+
+        # Capture move    
+        self.isCapture = self.PieceCaptured != "--" or self.isEnPassantMove # not sure if need to add isEnPassantMove
+
         # Castle move
         self.isCastleMove = isCastleMove
 
@@ -443,11 +448,34 @@ class Move():
     def GetRankFile(self, r, c):
         return self.ColsToFiles[c] + self.RowsToRanks[r]
 
+    def __str__(self) -> str:
+        '''
+        Overriding the str() function
+        '''	
+        # Castle Move
+        if self.isCastleMove:
+            return "O-O" if self.EndCol == 6 else "O-O-O"
 
+        endSquare = self.GetRankFile(self.EndRow, self.EndCol)
 
+        # Pawn moves
+        if self.PieceMoved[1] == 'P':
+            if self.isCapture:
+                return self.ColsToFiles[self.StartCol] + "x" + endSquare
+            else:
+                return endSquare
+            
+        # TODO: pawn promotion
 
+        # TODO: add disambiguation for pieces that can move to the same square
 
+        # TODO: add check and checkmate notation
 
+        # Piece moves
+        moveString = self.PieceMoved[1]
+        if self.isCapture:
+            moveString += "x"
+        return moveString + endSquare
 
 
 
