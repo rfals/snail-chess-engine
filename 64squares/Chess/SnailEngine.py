@@ -6,186 +6,82 @@ DEPTH = 2
 
 pieceScore = {"K": 0, "Q": 9, "R": 5, "B": 3, "N": 3, "P": 1}
 
-whitePawnScores = [[0,  0,  0,  0,  0,  0,  0,  0],
-                   [5, 10, 10,-20,-20, 10, 10,  5],
-                   [5, -5,-10,  0,  0,-10, -5,  5],
-                   [0,  0,  0, 20, 20,  0,  0,  0],
-                   [5,  5, 10, 25, 25, 10,  5,  5],
-                   [10, 10, 20, 30, 30, 20, 10, 10],
-                   [50, 50, 50, 50, 50, 50, 50, 50],
-                   [0,  0,  0,  0,  0,  0,  0,  0]]
+pawnScores = [[0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8],
+               [0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7],
+               [0.3, 0.3, 0.4, 0.5, 0.5, 0.4, 0.3, 0.3],
+               [0.25, 0.25, 0.3, 0.45, 0.45, 0.3, 0.25, 0.25],
+               [0.2, 0.2, 0.2, 0.4, 0.4, 0.2, 0.2, 0.2],
+               [0.25, 0.15, 0.1, 0.2, 0.2, 0.1, 0.15, 0.25],
+               [0.25, 0.3, 0.3, 0.0, 0.0, 0.3, 0.3, 0.25],
+               [0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2]]
 
-blackPawnScores = [[0,  0,  0,  0,  0,  0,  0,  0],
-                   [50, 50, 50, 50, 50, 50, 50, 50],
-                   [10, 10, 20, 30, 30, 20, 10, 10],
-                   [5,  5, 10, 25, 25, 10,  5,  5],
-                   [0,  0,  0, 20, 20,  0,  0,  0],
-                   [5, -5,-10,  0,  0,-10, -5,  5],
-                   [5, 10, 10,-20,-20, 10, 10,  5],
-                   [0,  0,  0,  0,  0,  0,  0,  0]]
+knightScores  = [[0.0, 0.1, 0.2, 0.2, 0.2, 0.2, 0.1, 0.0],
+                 [0.1, 0.3, 0.5, 0.5, 0.5, 0.5, 0.3, 0.1],
+                 [0.2, 0.5, 0.6, 0.65, 0.65, 0.6, 0.5, 0.2],
+                 [0.2, 0.55, 0.65, 0.7, 0.7, 0.65, 0.55, 0.2],
+                 [0.2, 0.5, 0.65, 0.7, 0.7, 0.65, 0.5, 0.2],
+                 [0.2, 0.55, 0.6, 0.65, 0.65, 0.6, 0.55, 0.2],
+                 [0.1, 0.3, 0.5, 0.55, 0.55, 0.5, 0.3, 0.1],
+                 [0.0, 0.1, 0.2, 0.2, 0.2, 0.2, 0.1, 0.0]]
 
-knightScores = [[1, 1, 1, 1, 1, 1, 1, 1],
-                [1, 2, 2, 2, 2, 2, 2, 1],
-                [1, 2, 3, 3, 3, 3, 2, 1],
-                [1, 2, 3, 4, 4, 3, 2, 1],
-                [1, 2, 3, 4, 4, 3, 2, 1],
-                [1, 2, 3, 3, 3, 3, 2, 1],
-                [1, 2, 2, 2, 2, 2, 2, 1],
-                [1, 1, 1, 1, 1, 1, 1, 1]]
+bishopScores = [[0.0, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.0],
+                 [0.2, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.2],
+                 [0.2, 0.4, 0.5, 0.6, 0.6, 0.5, 0.4, 0.2],
+                 [0.2, 0.5, 0.5, 0.6, 0.6, 0.5, 0.5, 0.2],
+                 [0.2, 0.4, 0.6, 0.6, 0.6, 0.6, 0.4, 0.2],
+                 [0.2, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.2],
+                 [0.2, 0.5, 0.4, 0.4, 0.4, 0.4, 0.5, 0.2],
+                 [0.0, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.0]]
 
-bishopScores = [[4, 3, 2, 1, 1, 2, 3, 4],
-                [3, 4, 3, 2, 2, 3, 4, 3],
-                [2, 3, 4, 3, 3, 4, 3, 2],
-                [1, 2, 3, 4, 4, 3, 2, 1],
-                [1, 2, 3, 4, 4, 3, 2, 1],
-                [2, 3, 4, 3, 3, 4, 3, 2],
-                [3, 4, 3, 2, 2, 3, 4, 3],
-                [4, 3, 2, 1, 1, 2, 3, 4]]
+rookScores = [[0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25],
+               [0.5, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75, 0.5],
+               [0.0, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.0],
+               [0.0, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.0],
+               [0.0, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.0],
+               [0.0, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.0],
+               [0.0, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.0],
+               [0.25, 0.25, 0.25, 0.5, 0.5, 0.25, 0.25, 0.25]]
 
-rookScores = [[4, 3, 4, 4, 4, 4, 3, 4],
-              [4, 4, 4, 4, 4, 4, 4, 4],
-              [1, 1, 2, 3, 3, 2, 1, 1],
-              [1, 2, 3, 4, 4, 3, 2, 1],
-              [1, 2, 3, 4, 4, 3, 2, 1],
-              [1, 1, 2, 3, 3, 2, 1, 1],
-              [4, 4, 4, 4, 4, 4, 4, 4],
-              [4, 3, 4, 4, 4, 4, 3, 4]]
-
-queenScores = [[4, 3, 2, 1, 1, 2, 3, 4],
-               [3, 4, 3, 2, 2, 3, 4, 3],
-               [2, 3, 4, 3, 3, 4, 3, 2],
-               [1, 2, 3, 4, 4, 3, 2, 1],
-               [1, 2, 3, 4, 4, 3, 2, 1],
-               [2, 3, 4, 3, 3, 4, 3, 2],
-               [3, 4, 3, 2, 2, 3, 4, 3],
-               [4, 3, 2, 1, 1, 2, 3, 4]]
+queenScores = [[0.0, 0.2, 0.2, 0.3, 0.3, 0.2, 0.2, 0.0],
+                [0.2, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.2],
+                [0.2, 0.4, 0.5, 0.5, 0.5, 0.5, 0.4, 0.2],
+                [0.3, 0.4, 0.5, 0.5, 0.5, 0.5, 0.4, 0.3],
+                [0.4, 0.4, 0.5, 0.5, 0.5, 0.5, 0.4, 0.3],
+                [0.2, 0.5, 0.5, 0.5, 0.5, 0.5, 0.4, 0.2],
+                [0.2, 0.4, 0.5, 0.4, 0.4, 0.4, 0.4, 0.2],
+                [0.0, 0.2, 0.2, 0.3, 0.3, 0.2, 0.2, 0.0]]
 
 
-piecePositionScores = {"N": knightScores, "B": bishopScores, "Q": queenScores, "R": rookScores, "wP": whitePawnScores, "bP": blackPawnScores}
+piecePositionScores = {"wN": knightScores,
+                         "bN": knightScores[::-1],
+                         "wB": bishopScores,
+                         "bB": bishopScores[::-1],
+                         "wQ": queenScores,
+                         "bQ": queenScores[::-1],
+                         "wR": rookScores,
+                         "bR": rookScores[::-1],
+                         "wP": pawnScores,
+                         "bP": pawnScores[::-1]}
 
-def findRandomMove(validMoves):
-    '''
-    Picks a random valid move
-    '''
-    return validMoves[random.randint(0, len(validMoves)-1)]
-
-
-def findGreedyMove(gs, validMoves):
-    '''
-    Finds the best move based on material only
-    '''
-
-    turnMultiplier = 1 if gs.whiteToMove else -1
-    opponentMinMaxScore = CHECKMATE
-    bestPlayerMove = None
-    random.shuffle(validMoves)
-
-    for playerMove in validMoves:
-        gs.MakeMove(playerMove)
-        opponentsMoves = gs.GetValidMoves()
-        # if the opponent is in checkmate or stalemate, the game is over, no need to go further
-        if gs.StaleMate:
-            opponentsMaxScore = STALEMATE
-        elif gs.CheckMate:
-            opponentsMaxScore = -CHECKMATE
-        else:
-            opponentsMaxScore = -CHECKMATE
-            for opponentsMove in opponentsMoves:
-                gs.MakeMove(opponentsMove)
-                gs.GetValidMoves() # introduces inefficiency, but is necessary to check for checkmate and stalemate TODO: look for other solutions
-                if gs.CheckMate:
-                    score = CHECKMATE
-                elif gs.StaleMate:
-                    score = STALEMATE
-                else:
-                    score = - turnMultiplier * scoreMaterial(gs.board)
-                if score > opponentsMaxScore:
-                    opponentsMaxScore = score
-                gs.UndoMove()
-        if opponentsMaxScore < opponentMinMaxScore:
-            opponentMinMaxScore = opponentsMaxScore
-            bestPlayerMove = playerMove
-        gs.UndoMove()
-    return bestPlayerMove
-
-def findBestMove(gs, validMoves):
+def findBestMove(gs, validMoves, returnQueue):
     '''
     Helper method to find the first recursive call
     '''
-    global nextMove, counter
+    global nextMove
     nextMove = None
     random.shuffle(validMoves)
     # findMoveMinMax(gs, validMoves, DEPTH, gs.whiteToMove)
-    counter = 0
     findMoveNegaMaxAlphaBeta(gs, validMoves, DEPTH, -CHECKMATE, CHECKMATE, 1 if gs.whiteToMove else -1)
-    print(counter)
-    return nextMove
-
-def findMoveMinMax(gs, validMoves, depth, whiteToMove):
-    '''
-    Recursive function to find the best move using minimax algorithm
-    '''
-    global nextMove
-    if depth == 0:
-        return scoreMaterial(gs.board)
-    
-    if whiteToMove:
-        maxScore = -CHECKMATE
-        for move in validMoves:
-            gs.MakeMove(move)
-            nextMoves = gs.GetValidMoves()
-            score = findMoveMinMax(gs, nextMoves, depth-1, False)
-            if score > maxScore:
-                maxScore = score
-                if depth == DEPTH:
-                    nextMove = move
-            gs.UndoMove()
-        return maxScore
-    
-    else:
-        minScore = CHECKMATE
-        for move in validMoves:
-            gs.MakeMove(move)
-            nextMoves = gs.GetValidMoves()
-            score = findMoveMinMax(gs, nextMoves, depth-1, True)
-            if score < minScore:
-                minScore = score
-                if depth == DEPTH:
-                    nextMove = move
-            gs.UndoMove()
-        return minScore
-
-def findMoveNegaMax(gs, validMoves, depth, turnMultiplier):
-    '''
-    Recursive function to find the best move using negamax algorithm
-    '''
-    global nextMove, counter
-    counter += 1
-    if depth == 0:
-        return turnMultiplier * scoreBoard(gs)
-    
-    maxScore = -CHECKMATE
-    for move in validMoves:
-        gs.MakeMove(move)
-        nextMoves = gs.GetValidMoves()
-        score = -findMoveNegaMax(gs, nextMoves, depth-1, -turnMultiplier)
-        if score > maxScore:
-            maxScore = score
-            if depth == DEPTH:
-                nextMove = move
-        gs.UndoMove()
-    return maxScore
+    returnQueue.put(nextMove)
 
 def findMoveNegaMaxAlphaBeta(gs, validMoves, depth, alpha, beta, turnMultiplier):
     '''
     Recursive function to find the best move using negamax algorithm
     '''
-    global nextMove, counter
-    counter += 1
+    global nextMove
     if depth == 0:
         return turnMultiplier * scoreBoard(gs)
     
-
     # move ordering - implement later
     maxScore = -CHECKMATE
     for move in validMoves:
@@ -196,7 +92,6 @@ def findMoveNegaMaxAlphaBeta(gs, validMoves, depth, alpha, beta, turnMultiplier)
             maxScore = score
             if depth == DEPTH:
                 nextMove = move
-                print(move, score)
         gs.UndoMove()
         if maxScore > alpha: #prune
             alpha = maxScore
@@ -204,8 +99,6 @@ def findMoveNegaMaxAlphaBeta(gs, validMoves, depth, alpha, beta, turnMultiplier)
             break
     return maxScore
            
-
-
 def scoreBoard(gs):
     '''
     Score the board based on material, positive score is good for white, negative score is good for black
@@ -217,50 +110,25 @@ def scoreBoard(gs):
             return CHECKMATE # white wins
     elif gs.StaleMate:
         return STALEMATE
-
     score = 0
     for r in range(len(gs.board)):
         for c in range(len(gs.board[r])):
             square = gs.board[r][c]
             if square != "--":
+
                 # score the piece based on its position
                 piecePositionScore = 0
                 if square[1] != "K": # don't score king positions
-                    if square[1] == "P": # score pawns differently
-                        piecePositionScore = piecePositionScores[square][r][c]
-                    else:
-                        piecePositionScore = piecePositionScores[square[1]][r][c]
-
-
-                if square[0] == "w":
-                    score += pieceScore[square[1]] + piecePositionScore * 0.1
-                elif square[0] == "b":
-                    score -= pieceScore[square[1]] + piecePositionScore * 0.1
+                    piecePositionScore = piecePositionScores[square][r][c]
+                if square[0] == "w": # score pawns differently
+                    score += pieceScore[square[1]] + piecePositionScore
+                if square[0] == "b":
+                    score -= pieceScore[square[1]] + piecePositionScore
 
     return score
 
-
-
-
-
-
-
-
-
-
-
-def scoreMaterial(board):
-    '''	
-    Svore the board based on material.
+def findRandomMove(validMoves):
     '''
-    score = 0
-    for row in board:
-        for square in row:
-            if square[0] == "w":
-                score += pieceScore[square[1]]
-            elif square[0] == "b":
-                score -= pieceScore[square[1]]
-
-    return score
-
-
+    Picks a random valid move
+    '''
+    return random.choice(validMoves)

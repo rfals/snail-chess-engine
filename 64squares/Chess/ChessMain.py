@@ -2,6 +2,7 @@ import pygame as p
 from ChessEngine import GameState
 from ChessEngine import Move
 import SnailEngine
+from multiprocessing import Process, Queue
 
 BOARD_WIDTH = BOARD_HEIGHT = 512
 MOVE_LOG_PANEL_WIDTH = 250
@@ -30,7 +31,6 @@ def main():
     ValidMoves = gs.GetValidMoves()
     MoveMade = False # blank variable that flags when a move is made
     animate = False # flag variable for when we should animate a move
-    print(gs.board)
     LoadImages()
     running = True
     sqSelected = () # stores last click of the player
@@ -41,14 +41,18 @@ def main():
     playerOne = True # if human is playing white, then this will be True, else False
     playerTwo = False # same as above but for black
 
+    AIThinking = False
+    moveFinderProcess = None
+    moveUndone = False
+
     while running:
         humanTurn = (gs.whiteToMove and playerOne) or (not gs.whiteToMove and playerTwo)
         for e in p.event.get():
             if e.type == p.QUIT:
                 running = False
-
+            # mouse handler
             elif e.type == p.MOUSEBUTTONDOWN:
-                if not gameOver and humanTurn:
+                if not gameOver:
                     location = p.mouse.get_pos() # location of the mouse
                     col = location[0]//SQ_SIZE
                     row = location[1]//SQ_SIZE
@@ -58,27 +62,30 @@ def main():
                     else:
                         sqSelected = (row, col)
                         playerClicks.append(sqSelected) # append for both 1st and 2nd clicks
-                    if len(playerClicks) ==2: #after 2nd click
+                    if len(playerClicks) == 2 and humanTurn: #after 2nd click
                         move = Move(playerClicks[0], playerClicks[1], gs.board)
-                        print(move.GetChessNotation())
                         for i in range(len(ValidMoves)):
                             if move == ValidMoves[i]:
                                 gs.MakeMove(ValidMoves[i])
                                 MoveMade = True
                                 animate = True
-
                                 sqSelected = () # reset player clicks
                                 playerClicks = []
                         if not MoveMade:
                             playerClicks = [sqSelected]
 
-                # key shortcuts
+            # key shortcuts
             elif e.type == p.KEYDOWN:
                 if e.key == p.K_z: # undo a move if 'z' is pressed
                     gs.UndoMove()
                     MoveMade = True
                     animate = False
                     gameOver = False
+                    if AIThinking:
+                        moveFinderProcess.terminate()
+                        AIThinking = False
+                    moveUndone = True
+                    
                 if e.key == p.K_r: # reset the game if 'r' is pressed
                     gs = GameState() # re-initialize the game state to reset the game
                     ValidMoves = gs.GetValidMoves()
@@ -87,19 +94,31 @@ def main():
                     MoveMade = False
                     animate = False
                     gameOver = False
+                    if AIThinking:
+                        moveFinderProcess.terminate()
+                        AIThinking = False
+                    moveUndone = True
 
                 if e.key ==p.K_e:
                     running = False # press 'e' to quit game
                     p.quit()    
 
         # AI move finder logic
-        if not gameOver and not humanTurn:
-            AIMove = SnailEngine.findBestMove(gs, ValidMoves)
-            if AIMove is None:
-                AIMove = SnailEngine.findRandomMove(ValidMoves)
-            gs.MakeMove(AIMove)
-            MoveMade = True
-            animate = True
+        if not gameOver and not humanTurn and not moveUndone:
+            if not AIThinking:
+                AIThinking = True
+                returnQueue = Queue() # used to pass data between threads
+                moveFinderProcess = Process(target=SnailEngine.findBestMove, args=(gs, ValidMoves, returnQueue))
+                moveFinderProcess.start() # call findBestMove(gs, ValidMoves)
+
+            if not moveFinderProcess.is_alive():
+                AIMove = returnQueue.get()
+                if AIMove is None:
+                    AIMove = SnailEngine.findRandomMove(ValidMoves)
+                gs.MakeMove(AIMove)
+                MoveMade = True
+                animate = True
+                AIThinking = False
 
         if MoveMade:
             if animate:
@@ -107,6 +126,7 @@ def main():
             ValidMoves = gs.GetValidMoves()
             MoveMade = False
             animate = False
+            moveUndone = False
 
         DrawGameState(screen, gs, ValidMoves, sqSelected, moveLogFont)
 
