@@ -26,6 +26,7 @@ class GameState():
         self.CheckMate = False
         self.StaleMate = False
         self.EnPassantPossible = () # coordinates for the square where en-passant is possible
+        self.EnPassantPossibleLog = [self.EnPassantPossible]
         self.CurrentCastlingRight = CastleRights(True, True, True, True)
         self.CastleRightsLog = [CastleRights(self.CurrentCastlingRight.wks, self.CurrentCastlingRight.bks, self.CurrentCastlingRight.wqs, self.CurrentCastlingRight.bqs)]
 
@@ -68,6 +69,8 @@ class GameState():
                 self.board[move.EndRow][move.EndCol+1] = self.board[move.EndRow][move.EndCol-2] # move rook
                 self.board[move.EndRow][move.EndCol-2] = '--' # erase old rook
 
+        # Update En Passant Possible Log
+        self.EnPassantPossibleLog.append(self.EnPassantPossible)
 
         # Update Castling Rights
         self.UpdateCastleRights(move)
@@ -92,11 +95,9 @@ class GameState():
             if move.isEnPassantMove:
                 self.board[move.EndRow][move.EndCol] = "--" # leave landing square blank
                 self.board[move.StartRow][move.EndCol] = move.PieceCaptured
-                self.EnPassantPossible = (move.EndRow, move.EndCol)
-            
-            # Undo 2 square pawn advance
-            if move.PieceMoved[1] == 'P' and abs(move.StartRow - move.EndRow) == 2:
-                self.EnPassantPossible = ()
+                
+            self.EnPassantPossibleLog.pop()
+            self.EnPassantPossible = self.EnPassantPossibleLog[-1]
 
             # Undo Castling Rights
             self.CastleRightsLog.pop() # get rid of the new castle rights from the move we are undoing

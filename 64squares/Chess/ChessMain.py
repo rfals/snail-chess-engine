@@ -183,6 +183,9 @@ def animateMove(move, screen, board, clock):
         p.draw.rect(screen, color, endSquare)
         # draw captured piece onto rectangle
         if move.PieceCaptured != '--':
+            if move.IsEnPassantMove:
+                enPassantRow = move.EndRow + 1 if move.PieceCaptured[0] == 'b' else move.EndRow - 1
+                endSquare = p.Rect(move.EndCol*SQ_SIZE, enPassantRow*SQ_SIZE, SQ_SIZE, SQ_SIZE)
             screen.blit(IMAGES[move.PieceCaptured], endSquare)
         # draw moving piece
         screen.blit(IMAGES[move.PieceMoved], p.Rect(c*SQ_SIZE, r*SQ_SIZE, SQ_SIZE, SQ_SIZE))
